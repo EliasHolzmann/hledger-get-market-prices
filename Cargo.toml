@@ -1,0 +1,17 @@
+[package]
+name = "hledger-get-market-prices"
+version = "1.0.0"
+edition = "2021"
+description = "Gets historical stock prices from Alpha Vantage API and outputs them in hledger market price format"
+license = "MIT OR Apache-2.0"
+keywords = ["ledger", "hledger", "finance"]
+repository = "https://github.com/EliasHolzmann/hledger-get-market-prices"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+tokio = { version = "1", features = ["full"] }
+clap = { version = "3", features = ["derive"] }
+lazy_static = "1"
+alpha_vantage = { version = "0.7", features = ["reqwest-client"] }
+reqwest = { version = "0.11", features = ["json"] }
