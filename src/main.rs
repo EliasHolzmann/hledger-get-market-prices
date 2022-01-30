@@ -38,6 +38,12 @@ enum Command {
             help = "What character to use as decimal separator"
         )]
         separator: char,
+        #[clap(
+            short,
+            long,
+            help = "Whether to place the currency symbol before or after the amount."
+        )]
+        commodity_symbol_before: bool,
     },
 }
 
@@ -53,6 +59,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
             decimal_digits,
             separator,
             currency_commodity_name,
+            commodity_symbol_before,
         } => {
             hledger_get_market_prices::get_history_for_stock(
                 stock_symbol,
@@ -60,6 +67,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
                 currency_commodity_name,
                 separator,
                 decimal_digits,
+                commodity_symbol_before,
             )
             .await
         }

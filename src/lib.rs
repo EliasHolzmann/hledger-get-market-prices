@@ -62,6 +62,7 @@ pub async fn get_history_for_stock(
     currency_commodity_name: String,
     separator: char,
     decimal_digits: Option<usize>,
+    currency_symbol_before: bool,
 ) {
     let stock_name = stock_commodity_name;
     let search = get_alpha_vantage_client()
@@ -105,9 +106,16 @@ pub async fn get_history_for_stock(
             price_string = price_string.replace('.', &separator.to_string());
         }
 
-        println!(
-            "P {} {} {} {}",
-            current_datetime, stock_name, price_string, currency_commodity_name
-        );
+        if currency_symbol_before {
+            println!(
+                "P {} {} {}{}",
+                current_datetime, stock_name, currency_commodity_name, price_string
+            );
+        } else {
+            println!(
+                "P {} {} {} {}",
+                current_datetime, stock_name, price_string, currency_commodity_name
+            );
+        }
     }
 }
