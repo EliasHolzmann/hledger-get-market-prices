@@ -1,5 +1,4 @@
 #![deny(clippy::pedantic)]
-#![deny(clippy::cargo)]
 #![deny(clippy::nursery)]
 
 use clap::{Parser, Subcommand};

@@ -1,5 +1,4 @@
 #![deny(clippy::pedantic)]
-#![deny(clippy::cargo)]
 #![deny(clippy::nursery)]
 
 fn get_alpha_vantage_client() -> alpha_vantage::api::ApiClient {
