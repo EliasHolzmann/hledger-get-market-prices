@@ -10,8 +10,8 @@ repository = "https://github.com/EliasHolzmann/hledger-get-market-prices"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-tokio = { version = "1", features = ["full"] }
-clap = { version = "3", features = ["derive"] }
-lazy_static = "1"
-alpha_vantage = { version = "0.7", features = ["reqwest-client"] }
-reqwest = { version = "0.11", features = ["json"] }
+tokio = { version = "1.48.0", features = ["full"] }
+clap = { version = "4.5.53", features = ["derive"] }
+lazy_static = "1.5.0"
+alpha_vantage = { version = "0.11.0", features = ["reqwest-client"] }
+reqwest = { version = "0.12.24", features = ["json"] }
