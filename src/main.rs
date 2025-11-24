@@ -50,7 +50,7 @@ enum Command {
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
     match App::parse().command {
         Command::SearchStockSymbol { search_query } => {
-            hledger_get_market_prices::search_stock_symbol(search_query).await
+            hledger_get_market_prices::search_stock_symbol(search_query).await;
         }
         Command::History {
             stock_symbol,
@@ -68,7 +68,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
                 decimal_digits,
                 commodity_symbol_before,
             )
-            .await
+            .await;
         }
     }
 
