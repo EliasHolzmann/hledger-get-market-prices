@@ -1,6 +1,8 @@
 #![deny(clippy::pedantic)]
 #![deny(clippy::nursery)]
 
+use std::path::PathBuf;
+
 use clap::{Parser, Subcommand};
 
 #[derive(Parser, Debug)]
@@ -24,6 +26,10 @@ enum Command {
         stock_commodity_name: String,
         #[clap(help = "Commodity name to use for the currency the market prices is denoted in")]
         currency_commodity_name: String,
+        #[clap(
+            help = "Journal file that the data should be saved to. Must have been created by a previous run of this command. May not exist, in which case it is created. New entries are merged with this file."
+        )]
+        journal_file: PathBuf,
         #[clap(
             short,
             long,
@@ -56,6 +62,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
             stock_symbol,
             stock_commodity_name,
             decimal_digits,
+            journal_file,
             separator,
             currency_commodity_name,
             commodity_symbol_before,
@@ -64,6 +71,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
                 stock_symbol,
                 stock_commodity_name,
                 currency_commodity_name,
+                journal_file,
                 separator,
                 decimal_digits,
                 commodity_symbol_before,
