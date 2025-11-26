@@ -5,8 +5,8 @@ use std::{
     collections::HashMap,
     convert::Infallible,
     fs::File,
-    io::{BufRead, BufReader, Write},
-    path::PathBuf,
+    io::{BufRead, BufReader, ErrorKind, Write},
+    path::{Path, PathBuf},
 };
 
 fn get_alpha_vantage_client() -> alpha_vantage::api::ApiClient {
@@ -67,6 +67,49 @@ pub async fn search_stock_symbol(search_query: String) {
             result.name()
         );
     }
+}
+
+#[must_use]
+pub fn get_journal_file_data(journal_file: &Path) -> HashMap<String, String> {
+    let file = File::open(journal_file);
+    let file = match file {
+        Ok(file) => file,
+        Err(e) if e.kind() == ErrorKind::NotFound => {
+            // new file => no entries
+            return HashMap::new();
+        }
+        Err(e) => report_application_bug("Couldn't open journal file", Some(e)),
+    };
+
+    BufReader::new(file)
+        .lines()
+        .map(|line| {
+            line.unwrap_or_else(|e| {
+                report_application_bug("Getting line from journal file failed", Some(e))
+            })
+            .trim_start()
+            .to_string()
+        })
+        .filter(|line| !line.starts_with(';')) // filter comment lines
+        .map(|line| {
+            let (first_part, last_part) = line.split_once(' ').unwrap_or_else(|| {
+                report_application_bug::<Infallible>(&format!("Contains no space: {line}"), None);
+            });
+            if first_part != "P" {
+                report_application_bug::<Infallible>(
+                    &format!("{line} is not a market price"),
+                    None,
+                );
+            }
+            let (date, price_info) = last_part.split_once(' ').unwrap_or_else(|| {
+                report_application_bug::<Infallible>(
+                    &format!("Contains only one space: {line}"),
+                    None,
+                );
+            });
+            (date.to_string(), price_info.to_string())
+        })
+        .collect()
 }
 
 pub async fn get_history_for_stock(
@@ -135,37 +178,7 @@ pub async fn get_history_for_stock(
         );
     }
 
-    let file = File::open(&journal_file)
-        .unwrap_or_else(|e| report_application_bug("Couldn't open journal file", Some(e)));
-    let file_data: HashMap<_, _> = BufReader::new(file)
-        .lines()
-        .map(|line| {
-            line.unwrap_or_else(|e| {
-                report_application_bug("Getting line from journal file failed", Some(e))
-            })
-            .trim_start()
-            .to_string()
-        })
-        .filter(|line| !line.starts_with(';')) // filter comment lines
-        .map(|line| {
-            let (first_part, last_part) = line.split_once(' ').unwrap_or_else(|| {
-                report_application_bug::<Infallible>(&format!("Contains no space: {line}"), None);
-            });
-            if first_part != "P" {
-                report_application_bug::<Infallible>(
-                    &format!("{line} is not a market price"),
-                    None,
-                );
-            }
-            let (date, price_info) = last_part.split_once(' ').unwrap_or_else(|| {
-                report_application_bug::<Infallible>(
-                    &format!("Contains only one space: {line}"),
-                    None,
-                );
-            });
-            (date.to_string(), price_info.to_string())
-        })
-        .collect();
+    let file_data = get_journal_file_data(&journal_file);
 
     let mut new_data = file_data;
     new_data.extend(api_data);
