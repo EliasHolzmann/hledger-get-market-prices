@@ -94,6 +94,12 @@ pub async fn get_history_for_stock(
             )
         });
 
+    // The `api_data` hashmap uses the date (in format YYYY-MM-DD, as used by
+    // the API as well as hledger) as key. As value, the string that should be
+    // put behind the date in the journal file (commodity name and price) is
+    // used. The idea behind this is that we need to merge this hashmap with the
+    // current journal file contents, and we don't want to parse this file any
+    // further than necessary to accomplish the merge.
     let api_data: HashMap<String, String> = stock_times
         .data()
         .iter()
